@@ -11,17 +11,6 @@ const getAllPatients = async (req, res) => {
     }
 };
 
-// Lấy thông tin chi tiết của một bệnh nhân
-const getPatientById = async (req, res) => {
-    try {
-        const patient = await Patient.findByPk(req.params.id);
-        if (!patient) return res.status(404).json({ message: 'Không tìm thấy bệnh nhân' });
-        res.json(patient);
-    } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi lấy thông tin bệnh nhân' });
-    }
-};
-
 // Tạo mới một bệnh nhân
 const createPatient = async (req, res) => {
     try {
@@ -29,6 +18,19 @@ const createPatient = async (req, res) => {
         res.status(201).json(newPatient);
     } catch (error) {
         res.status(500).json({ message: 'Lỗi khi tạo bệnh nhân mới' });
+    }
+};
+
+// Cập nhật thông tin bệnh nhân
+const updatePatient = async (req, res) => {
+    try {
+        const patient = await Patient.findByPk(req.params.id);
+        if (!patient) return res.status(404).json({ message: 'Không tìm thấy bệnh nhân' });
+
+        await patient.update(req.body);
+        res.json({ message: 'Cập nhật thông tin bệnh nhân thành công' });
+    } catch (error) {
+        res.status(500).json({ message: 'Lỗi khi cập nhật thông tin bệnh nhân' });
     }
 };
 
@@ -44,7 +46,7 @@ const deletePatient = async (req, res) => {
 
 module.exports = {
     getAllPatients,
-    getPatientById,
     createPatient,
+    updatePatient,
     deletePatient,
 };

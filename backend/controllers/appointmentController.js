@@ -1,28 +1,39 @@
 // controllers/appointmentController.js
 const { Appointment, Patient, User } = require('../models');
 
-// Lấy danh sách tất cả các lịch khám
-const getAllAppointments = async (req, res) => {
+// Lấy danh sách lịch khám của bệnh nhân
+const getAppointmentsByPatient = async (req, res) => {
     try {
         const appointments = await Appointment.findAll({
-            include: [
-                { model: Patient, attributes: ['name'] },
-                { model: User, attributes: ['username'] },
-            ],
+            where: { patient_id: req.params.patientId },
+            include: [{ model: User, as: 'doctor', attributes: ['username'] }],
         });
         res.json(appointments);
     } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi lấy danh sách lịch khám' });
+        res.status(500).json({ message: 'Lỗi khi lấy lịch khám.' });
     }
 };
 
-// Tạo lịch khám mới
+// Bác sĩ tạo lịch khám cho bệnh nhân
 const createAppointment = async (req, res) => {
     try {
         const newAppointment = await Appointment.create(req.body);
         res.status(201).json(newAppointment);
     } catch (error) {
-        res.status(500).json({ message: 'Lỗi khi tạo lịch khám mới' });
+        res.status(500).json({ message: 'Lỗi khi tạo lịch khám.' });
+    }
+};
+
+// Bệnh nhân xác nhận lịch khám
+const confirmAppointment = async (req, res) => {
+    try {
+        const appointment = await Appointment.findByPk(req.params.id);
+        if (!appointment) return res.status(404).json({ message: 'Không tìm thấy lịch khám.' });
+
+        await appointment.update({ status: 'confirmed' });
+        res.json({ message: 'Lịch khám đã được xác nhận.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Lỗi khi xác nhận lịch khám.' });
     }
 };
 
@@ -37,7 +48,8 @@ const deleteAppointment = async (req, res) => {
 };
 
 module.exports = {
-    getAllAppointments,
+    getAppointmentsByPatient,
     createAppointment,
     deleteAppointment,
+    confirmAppointment,
 };

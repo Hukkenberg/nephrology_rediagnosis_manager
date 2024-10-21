@@ -7,6 +7,7 @@ import PatientDetails from '../components/PatientDetails';
 import LabRequests from '../components/LabRequests';
 import ManageAccounts from '../components/ManageAccounts';
 import ProtectedRoute from '../components/ProtectedRoute';
+import ManagePatients from '../components/ManagePatients';
 
 export default function App() {
     return (
@@ -22,6 +23,7 @@ export default function App() {
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['manager']} />}>
                     <Route path="/manage-accounts" element={<ManageAccounts />} />
+                    <Route path="/manage-patients" element={<ManagePatients />} />
                 </Route>
             </Routes>
         </Router>

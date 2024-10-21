@@ -1,17 +1,15 @@
 // routes/patients.js
 const express = require('express');
 const router = express.Router();
+const { authenticateToken, authorizeRole } = require('../middleware/auth');
 const {
-    getAllPatients,
-    getPatientById,
-    createPatient,
-    deletePatient,
+    getAllPatients, createPatient, updatePatient, deletePatient
 } = require('../controllers/patientController');
 
-// Các route cho bệnh nhân
-router.get('/', getAllPatients);
-router.get('/:id', getPatientById);
-router.post('/', createPatient);
-router.delete('/:id', deletePatient);
+// Chỉ nhân viên quản lý mới có quyền quản lý bệnh nhân
+router.get('/', authenticateToken, authorizeRole('manager'), getAllPatients);
+router.post('/', authenticateToken, authorizeRole('manager'), createPatient);
+router.put('/:id', authenticateToken, authorizeRole('manager'), updatePatient);
+router.delete('/:id', authenticateToken, authorizeRole('manager'), deletePatient);
 
 module.exports = router;
