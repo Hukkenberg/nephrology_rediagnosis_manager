@@ -47,9 +47,24 @@ const deleteAppointment = async (req, res) => {
     }
 };
 
+// Lấy lịch sử khám của một bệnh nhân
+const getPatientHistory = async (req, res) => {
+    try {
+        const appointments = await Appointment.findAll({
+            where: { patient_id: req.params.patientId },
+            include: [{ model: User, as: 'doctor', attributes: ['username'] }],
+            order: [['date', 'ASC']],
+        });
+        res.json(appointments);
+    } catch (error) {
+        res.status(500).json({ message: 'Lỗi khi lấy lịch sử khám.' });
+    }
+};
+
 module.exports = {
     getAppointmentsByPatient,
     createAppointment,
     deleteAppointment,
     confirmAppointment,
+    getPatientHistory,
 };
